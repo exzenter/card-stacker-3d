@@ -301,18 +301,28 @@ function cards3d_render_block($attributes) {
             });
         }
 
-        cards.forEach((card, index) => {
-            card.addEventListener('mouseenter', () => {
-                updatePositions(index);
-            });
+        // Event Delegation: Attach listeners to wrapper instead of each card
+        wrapper.addEventListener('mouseover', (e) => {
+            const card = e.target.closest('.cards3d-card');
+            if (!card) return;
             
-            card.addEventListener('mouseleave', () => {
-                // Check if stayHover is active for current breakpoint
-                const stayHover = getBool('--c3d-stay-hover');
-                if (!stayHover) {
-                    updatePositions(-1); // Reset all
-                }
-            });
+            // Get index from the card we entered
+            const index = parseInt(card.dataset.index, 10);
+            updatePositions(index);
+        });
+
+        wrapper.addEventListener('mouseout', (e) => {
+            const card = e.target.closest('.cards3d-card');
+            if (!card) return;
+            
+            // Ignore if moving inside the same card
+            if (card.contains(e.relatedTarget)) return;
+
+            // Check if stayHover is active for current breakpoint
+            const stayHover = getBool('--c3d-stay-hover');
+            if (!stayHover) {
+                updatePositions(-1); // Reset all
+            }
         });
         
     })();
