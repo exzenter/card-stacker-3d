@@ -140,6 +140,23 @@ export default function CardEditor({ cards, onChange, onClose }) {
                                             />
                                         </div>
                                     </HStack>
+
+                                    <HStack spacing={3} style={{ marginTop: '12px' }}>
+                                        <TextControl
+                                            label={__('Link URL (optional)', '3d-cards-block')}
+                                            value={card.linkUrl || ''}
+                                            onChange={(value) => updateCard(index, 'linkUrl', value)}
+                                            placeholder="https://..."
+                                            help={__('Fügt einen Link zur Karte hinzu.', '3d-cards-block')}
+                                        />
+                                        <TextControl
+                                            label={__('JS Event Name (optional)', '3d-cards-block')}
+                                            value={card.customEvent || ''}
+                                            onChange={(value) => updateCard(index, 'customEvent', value)}
+                                            placeholder="my-custom-event"
+                                            help={__('Feuert ein CustomEvent beim Klick.', '3d-cards-block')}
+                                        />
+                                    </HStack>
                                 </div>
 
                                 {/* SVG Preview */}

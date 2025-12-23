@@ -157,10 +157,27 @@ function cards3d_render_block($attributes) {
                 $zPos = $index * $atts['zOffset'];
                 $xPos = $index * $atts['xOffset'];
                 $yPos = $index * $atts['yOffset'];
+                
+                // Determine tag and attributes
+                $tagName = 'div';
+                $cardAttrs = '';
+                
+                if (!empty($card['linkUrl'])) {
+                    $tagName = 'a';
+                    $cardAttrs .= ' href="' . esc_url($card['linkUrl']) . '"';
+                    // Open in new tab? Maybe valid to add target blank if external? 
+                    // Let's keep simple for now or assume same tab.
+                }
+                
+                if (!empty($card['customEvent'])) {
+                    // Dispatch custom event on click
+                    $eventName = esc_js($card['customEvent']);
+                    $cardAttrs .= ' onclick="window.dispatchEvent(new CustomEvent(\'' . $eventName . '\', { detail: { cardIndex: ' . $index . ' } }));"';
+                }
             ?>
-            <div class="cards3d-card cards3d-card-<?php echo $index; ?>" style="
+            <<?php echo $tagName; ?> class="cards3d-card cards3d-card-<?php echo $index; ?>" style="
                 transform: translateZ(<?php echo $zPos; ?>px) translateX(<?php echo $xPos; ?>px) translateY(<?php echo $yPos; ?>px);
-            " data-index="<?php echo $index; ?>" data-hover-lift="<?php echo esc_attr($atts['hoverLift']); ?>">
+            " data-index="<?php echo $index; ?>" data-hover-lift="<?php echo esc_attr($atts['hoverLift']); ?>"<?php echo $cardAttrs; ?>>
                 <div class="cards3d-face" style="
                     background: <?php echo esc_attr($atts['cardFaceColor']); ?>;
                     box-shadow: 0 0 0 1px <?php echo esc_attr($atts['cardBorderColor']); ?>;
@@ -191,7 +208,7 @@ function cards3d_render_block($attributes) {
                         font-size: <?php echo round($atts['fontSize'] * 0.7); ?>px;
                     "><?php echo esc_html($card['subtitle']); ?></span>
                 </div>
-            </div>
+            </<?php echo $tagName; ?>>
             <?php endforeach; ?>
         </div>
     </div>
