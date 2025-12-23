@@ -26,7 +26,15 @@ const PreviewCard = memo(({
     subtitleX,
     subtitleY,
     fontSize,
+    swapTitleSubtitle,
 }) => {
+    // Swap the text content and styling when toggle is enabled
+    const displayTitle = swapTitleSubtitle ? card.subtitle : card.title;
+    const displaySubtitle = swapTitleSubtitle ? card.title : card.subtitle;
+    const titleFontSize = swapTitleSubtitle ? Math.round(fontSize * 0.7) : fontSize;
+    const subtitleFontSize = swapTitleSubtitle ? fontSize : Math.round(fontSize * 0.7);
+    const titleColor = swapTitleSubtitle ? '#8892a4' : '#1a2744';
+    const subtitleColor = swapTitleSubtitle ? '#1a2744' : '#8892a4';
     const zPos = index * zOffset;
     const xPos = index * xOffset;
     const yPos = index * yOffset;
@@ -79,20 +87,24 @@ const PreviewCard = memo(({
                     style={{
                         bottom: `${titleY}px`,
                         left: `${titleX}px`,
-                        fontSize: `${fontSize}px`,
+                        fontSize: `${titleFontSize}px`,
+                        fontWeight: swapTitleSubtitle ? 400 : 600,
+                        color: titleColor,
                     }}
                 >
-                    {card.title}
+                    {displayTitle}
                 </span>
                 <span
                     className="cards3d-subtitle"
                     style={{
                         bottom: `${subtitleY}%`,
                         right: `${subtitleX}px`,
-                        fontSize: `${Math.round(fontSize * 0.7)}px`,
+                        fontSize: `${subtitleFontSize}px`,
+                        fontWeight: swapTitleSubtitle ? 600 : 400,
+                        color: subtitleColor,
                     }}
                 >
-                    {card.subtitle}
+                    {displaySubtitle}
                 </span>
             </div>
         </div>

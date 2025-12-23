@@ -81,7 +81,8 @@ function cards3d_render_block($attributes) {
         'vertPosMobile' => null,
         'horPosMobile' => null,
         'cameraRotateXMobile' => null,
-        'orthographicMobile' => null
+        'orthographicMobile' => null,
+        'swapTitleSubtitle' => false
     );
 
     $atts = wp_parse_args($attributes, $defaults);
@@ -200,6 +201,16 @@ function cards3d_render_block($attributes) {
                 $xPos = $index * $atts['xOffset'];
                 $yPos = $index * $atts['yOffset'];
                 
+                // Swap title/subtitle text and styling when toggle is enabled
+                $displayTitle = $atts['swapTitleSubtitle'] ? $card['subtitle'] : $card['title'];
+                $displaySubtitle = $atts['swapTitleSubtitle'] ? $card['title'] : $card['subtitle'];
+                $titleFontSize = $atts['swapTitleSubtitle'] ? round($atts['fontSize'] * 0.7) : $atts['fontSize'];
+                $subtitleFontSize = $atts['swapTitleSubtitle'] ? $atts['fontSize'] : round($atts['fontSize'] * 0.7);
+                $titleFontWeight = $atts['swapTitleSubtitle'] ? 400 : 600;
+                $subtitleFontWeight = $atts['swapTitleSubtitle'] ? 600 : 400;
+                $titleColor = $atts['swapTitleSubtitle'] ? '#8892a4' : '#1a2744';
+                $subtitleColor = $atts['swapTitleSubtitle'] ? '#1a2744' : '#8892a4';
+                
                 // Determine tag and attributes
                 $tagName = 'div';
                 $cardAttrs = '';
@@ -242,13 +253,17 @@ function cards3d_render_block($attributes) {
                     <span class="cards3d-title" style="
                         bottom: <?php echo esc_attr($atts['titleY']); ?>px;
                         left: <?php echo esc_attr($atts['titleX']); ?>px;
-                        font-size: <?php echo esc_attr($atts['fontSize']); ?>px;
-                    "><?php echo esc_html($card['title']); ?></span>
+                        font-size: <?php echo esc_attr($titleFontSize); ?>px;
+                        font-weight: <?php echo esc_attr($titleFontWeight); ?>;
+                        color: <?php echo esc_attr($titleColor); ?>;
+                    "><?php echo esc_html($displayTitle); ?></span>
                     <span class="cards3d-subtitle" style="
                         bottom: <?php echo esc_attr($atts['subtitleY']); ?>%;
                         right: <?php echo esc_attr($atts['subtitleX']); ?>px;
-                        font-size: <?php echo round($atts['fontSize'] * 0.7); ?>px;
-                    "><?php echo esc_html($card['subtitle']); ?></span>
+                        font-size: <?php echo esc_attr($subtitleFontSize); ?>px;
+                        font-weight: <?php echo esc_attr($subtitleFontWeight); ?>;
+                        color: <?php echo esc_attr($subtitleColor); ?>;
+                    "><?php echo esc_html($displaySubtitle); ?></span>
                 </div>
             </<?php echo $tagName; ?>>
             <?php endforeach; ?>
