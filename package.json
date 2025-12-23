@@ -1,0 +1,17 @@
+{
+    "name": "3d-cards-block",
+    "version": "1.0.0",
+    "description": "A Gutenberg block for 3D stacked cards",
+    "author": "Your Name",
+    "license": "GPL-2.0-or-later",
+    "main": "build/index.js",
+    "scripts": {
+        "build": "wp-scripts build",
+        "start": "wp-scripts start",
+        "format": "wp-scripts format",
+        "lint:js": "wp-scripts lint-js"
+    },
+    "devDependencies": {
+        "@wordpress/scripts": "^27.0.0"
+    }
+}

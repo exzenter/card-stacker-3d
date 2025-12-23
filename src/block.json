@@ -1,0 +1,127 @@
+{
+    "$schema": "https://schemas.wp.org/trunk/block.json",
+    "apiVersion": 3,
+    "name": "cards3d/cards-block",
+    "version": "1.0.0",
+    "title": "3D Cards",
+    "category": "widgets",
+    "icon": "screenoptions",
+    "description": "Display interactive 3D stacked cards",
+    "supports": {
+        "html": false,
+        "align": [
+            "wide",
+            "full"
+        ]
+    },
+    "textdomain": "3d-cards-block",
+    "editorScript": "file:./index.js",
+    "editorStyle": "file:./index.css",
+    "style": "file:./style-index.css",
+    "attributes": {
+        "cards": {
+            "type": "array",
+            "default": [
+                {
+                    "svg": "<svg viewBox=\"0 0 80 80\" fill=\"none\"><ellipse cx=\"32\" cy=\"40\" rx=\"10\" ry=\"14\" fill=\"url(#grad-uxui-1)\" transform=\"rotate(-20 32 40)\" style=\"mix-blend-mode: multiply;\"></ellipse><ellipse cx=\"48\" cy=\"40\" rx=\"10\" ry=\"14\" fill=\"url(#grad-uxui-2)\" transform=\"rotate(20 48 40)\" style=\"mix-blend-mode: multiply;\"></ellipse><defs><linearGradient id=\"grad-uxui-1\" x1=\"22\" y1=\"26\" x2=\"42\" y2=\"54\"><stop stop-color=\"#6366f1\"/><stop offset=\"1\" stop-color=\"#06b6d4\"/></linearGradient><linearGradient id=\"grad-uxui-2\" x1=\"38\" y1=\"26\" x2=\"58\" y2=\"54\"><stop stop-color=\"#f97316\"/><stop offset=\"1\" stop-color=\"#ec4899\"/></linearGradient></defs></svg>",
+                    "title": "UX/UI",
+                    "subtitle": "Creative Work"
+                },
+                {
+                    "svg": "<svg viewBox=\"0 0 80 80\" fill=\"none\"><circle cx=\"40\" cy=\"40\" r=\"18\" fill=\"url(#grad-wp)\"/><path d=\"M28 40c0-6.6 5.4-12 12-12s12 5.4 12 12-5.4 12-12 12-12-5.4-12-12z\" stroke=\"#fff\" stroke-width=\"2\" fill=\"none\"/><text x=\"40\" y=\"45\" text-anchor=\"middle\" fill=\"#fff\" font-size=\"12\" font-weight=\"bold\">W</text><defs><linearGradient id=\"grad-wp\" x1=\"22\" y1=\"22\" x2=\"58\" y2=\"58\"><stop stop-color=\"#0073aa\"/><stop offset=\"1\" stop-color=\"#00a0d2\"/></linearGradient></defs></svg>",
+                    "title": "WordPress",
+                    "subtitle": "CMS Solutions"
+                },
+                {
+                    "svg": "<svg viewBox=\"0 0 80 80\" fill=\"none\"><rect x=\"24\" y=\"28\" width=\"32\" height=\"24\" rx=\"2\" fill=\"url(#grad-web)\"/><circle cx=\"40\" cy=\"56\" r=\"4\" fill=\"#64748b\"/><rect x=\"36\" y=\"52\" width=\"8\" height=\"4\" fill=\"#64748b\"/><defs><linearGradient id=\"grad-web\" x1=\"24\" y1=\"28\" x2=\"56\" y2=\"52\"><stop stop-color=\"#8b5cf6\"/><stop offset=\"1\" stop-color=\"#d946ef\"/></linearGradient></defs></svg>",
+                    "title": "Webdesign",
+                    "subtitle": "Creative Agency"
+                }
+            ]
+        },
+        "cardDepth": {
+            "type": "number",
+            "default": 12
+        },
+        "zOffset": {
+            "type": "number",
+            "default": 60
+        },
+        "xOffset": {
+            "type": "number",
+            "default": 0
+        },
+        "yOffset": {
+            "type": "number",
+            "default": 0
+        },
+        "logoSize": {
+            "type": "number",
+            "default": 100
+        },
+        "logoX": {
+            "type": "number",
+            "default": 50
+        },
+        "logoY": {
+            "type": "number",
+            "default": 50
+        },
+        "titleY": {
+            "type": "number",
+            "default": 16
+        },
+        "titleX": {
+            "type": "number",
+            "default": 16
+        },
+        "subtitleY": {
+            "type": "number",
+            "default": 100
+        },
+        "subtitleX": {
+            "type": "number",
+            "default": 16
+        },
+        "fontSize": {
+            "type": "number",
+            "default": 16
+        },
+        "hoverLift": {
+            "type": "number",
+            "default": 80
+        },
+        "globalScale": {
+            "type": "number",
+            "default": 180
+        },
+        "vertPos": {
+            "type": "number",
+            "default": 0
+        },
+        "cameraRotateX": {
+            "type": "number",
+            "default": 55
+        },
+        "orthographic": {
+            "type": "boolean",
+            "default": true
+        },
+        "cardFaceColor": {
+            "type": "string",
+            "default": "#ffffff"
+        },
+        "cardBorderColor": {
+            "type": "string",
+            "default": "#e4e8ec"
+        },
+        "depthColor1": {
+            "type": "string",
+            "default": "#e8eaee"
+        },
+        "depthColor2": {
+            "type": "string",
+            "default": "#dcdfe3"
+        }
+    }
+}
