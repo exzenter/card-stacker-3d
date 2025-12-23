@@ -122,6 +122,10 @@
         "depthColor2": {
             "type": "string",
             "default": "#dcdfe3"
+        },
+        "blockHeight": {
+            "type": "number",
+            "default": 600
         }
     }
 }

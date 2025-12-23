@@ -65,7 +65,8 @@ function cards3d_render_block($attributes) {
         'cardFaceColor' => '#ffffff',
         'cardBorderColor' => '#e4e8ec',
         'depthColor1' => '#e8eaee',
-        'depthColor2' => '#dcdfe3'
+        'depthColor2' => '#dcdfe3',
+        'blockHeight' => 600
     );
 
     $atts = wp_parse_args($attributes, $defaults);
@@ -81,10 +82,10 @@ function cards3d_render_block($attributes) {
     
     ob_start();
     ?>
-    <div id="<?php echo esc_attr($block_id); ?>" class="cards3d-wrapper" style="perspective: <?php echo $perspective; ?>;">
+    <div id="<?php echo esc_attr($block_id); ?>" class="cards3d-wrapper" style="perspective: <?php echo $perspective; ?>; min-height: <?php echo esc_attr($atts['blockHeight']); ?>px;">
         <div class="cards3d-container" style="
             transform: rotateX(<?php echo esc_attr($atts['cameraRotateX']); ?>deg) rotateZ(45deg) scale3d(<?php echo $scaleTransform; ?>, <?php echo $scaleTransform; ?>, <?php echo $scaleTransform; ?>);
-            margin-top: <?php echo esc_attr($atts['vertPos']); ?>px;
+            margin-bottom: <?php echo esc_attr($atts['vertPos']); ?>px;
             --card-depth: <?php echo esc_attr($atts['cardDepth']); ?>px;
         ">
             <?php foreach ($cards as $index => $card) : 

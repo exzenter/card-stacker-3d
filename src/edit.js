@@ -37,6 +37,7 @@ export default function Edit({ attributes, setAttributes }) {
         cardBorderColor,
         depthColor1,
         depthColor2,
+        blockHeight,
     } = attributes;
 
     const [isCardEditorOpen, setIsCardEditorOpen] = useState(false);
@@ -110,6 +111,13 @@ export default function Edit({ attributes, setAttributes }) {
                         onChange={(value) => setAttributes({ globalScale: value })}
                         min={50}
                         max={350}
+                    />
+                    <RangeControl
+                        label={__('Block-Höhe (px)', '3d-cards-block')}
+                        value={blockHeight}
+                        onChange={(value) => setAttributes({ blockHeight: value })}
+                        min={200}
+                        max={1200}
                     />
                     <RangeControl
                         label={__('Vertikale Position', '3d-cards-block')}
@@ -255,18 +263,19 @@ export default function Edit({ attributes, setAttributes }) {
             )}
 
             {/* Editor Preview */}
-            <div {...blockProps}>
+            <div {...blockProps} style={{ minHeight: `${blockHeight}px` }}>
                 <div
                     className="cards3d-preview-container"
                     style={{
                         perspective: orthographic ? 'none' : '1000px',
+                        minHeight: `${blockHeight}px`,
                     }}
                 >
                     <div
                         className="cards3d-container"
                         style={{
                             transform: `rotateX(${cameraRotateX}deg) rotateZ(45deg) scale3d(${scaleTransform}, ${scaleTransform}, ${scaleTransform})`,
-                            marginTop: `${vertPos}px`,
+                            marginBottom: `${vertPos}px`,
                             '--card-depth': `${cardDepth}px`,
                         }}
                     >

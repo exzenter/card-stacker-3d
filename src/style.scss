@@ -2,22 +2,24 @@
 
 .cards3d-wrapper {
     display: flex;
-    align-items: center;
+    align-items: flex-end;
     justify-content: center;
     min-height: 600px;
     width: 100%;
-    overflow: hidden;
+    overflow: visible;
 }
 
 .cards3d-container {
     position: relative;
     width: 450px;
-    height: 550px;
+    height: 220px;
     transform-style: preserve-3d;
 }
 
 .cards3d-card {
     position: absolute;
+    bottom: 0;
+    left: 0;
     width: 220px;
     height: 220px;
     transition: transform 0.4s ease;
