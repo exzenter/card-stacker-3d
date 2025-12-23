@@ -14,6 +14,13 @@ A WordPress Gutenberg block that displays interactive 3D stacked cards with full
   - Global scale (50-350%)
   - Camera rotation and orthographic/perspective toggle
 - **Hover Effects** - Cards lift when hovered
+  - Stay Hover option - Last hovered card remains lifted
+  - Slide Hover option - Cards slide to the side with customizable X/Y/Z offsets
+- **Scroll Animation** - Optional entrance animation when block scrolls into viewport
+  - All cards start in active (lifted/slide) state
+  - Animates from bottom to top back to base positions when fully scrolled into view
+  - Configurable stagger delay (50-1000ms)
+  - Replays when block exits and re-enters viewport
 - **Card Editor Modal** - Easy popup to manage all cards
 
 ## Installation

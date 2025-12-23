@@ -31,6 +31,8 @@ export default function Edit({ attributes, setAttributes }) {
         subtitleX,
         fontSize,
         hoverLift,
+        scrollAnimationEnabled,
+        scrollAnimationStagger,
         globalScale,
         vertPos,
         cameraRotateX,
@@ -158,7 +160,27 @@ export default function Edit({ attributes, setAttributes }) {
 
                 {/* Interaction Settings */}
                 <PanelBody title={__('Interaktion', '3d-cards-block')} initialOpen={false}>
-                    <TabPanel
+                    <div style={{ marginBottom: '12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <ToggleControl
+                        label={__('Scroll Animation on Entrance', '3d-cards-block')}
+                        checked={!!scrollAnimationEnabled}
+                        onChange={(value) => setAttributes({ scrollAnimationEnabled: value })}
+                        help={__('Alle Karten beginnen aktiv und animieren sich beim vollständigen Scrollen ins Viewport zurück.', '3d-cards-block')}
+                        style={{ marginBottom: 0 }}
+                    />
+                    </div>
+                    {scrollAnimationEnabled && (
+                        <RangeControl
+                            label={__('Stagger Delay (ms)', '3d-cards-block')}
+                            value={scrollAnimationStagger}
+                            onChange={(value) => setAttributes({ scrollAnimationStagger: value })}
+                            min={50}
+                            max={1000}
+                            step={50}
+                            help={__('Zeit zwischen jeder Karte beim Zurücksetzen.', '3d-cards-block')}
+                        />
+                    )}
+                <TabPanel
                         className="cards3d-interaction-tabs"
                         activeClass="is-active"
                         onSelect={(tabName) => setViewMode(tabName)}

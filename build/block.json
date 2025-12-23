@@ -258,6 +258,14 @@
     "hoverLiftMobile": {
       "type": "number",
       "default": null
+    },
+    "scrollAnimationEnabled": {
+      "type": "boolean",
+      "default": false
+    },
+    "scrollAnimationStagger": {
+      "type": "number",
+      "default": 200
     }
   }
 }

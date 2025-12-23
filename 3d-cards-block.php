@@ -58,6 +58,8 @@ function cards3d_render_block($attributes) {
         'subtitleX' => 16,
         'fontSize' => 16,
         'hoverLift' => 80,
+        'scrollAnimationEnabled' => false,
+        'scrollAnimationStagger' => 200,
         'globalScale' => 180,
         'vertPos' => 0,
         'cameraRotateX' => 55,
@@ -115,6 +117,8 @@ function cards3d_render_block($attributes) {
             --c3d-slide-x: <?php echo intval($atts['slideHoverX']); ?>px;
             --c3d-slide-y: <?php echo intval($atts['slideHoverY']); ?>px;
             --c3d-slide-z: <?php echo intval($atts['slideHoverZ']); ?>px;
+            --c3d-scroll-animation-enabled: <?php echo $atts['scrollAnimationEnabled'] ? 1 : 0; ?>;
+            --c3d-scroll-animation-stagger: <?php echo intval($atts['scrollAnimationStagger']); ?>;
         }
         
         <?php if (
@@ -270,6 +274,75 @@ function cards3d_render_block($attributes) {
              const val = getComputedStyle(wrapper).getPropertyValue(name).trim();
              return val === '1';
         };
+
+        const scrollAnimationEnabled = getBool('--c3d-scroll-animation-enabled');
+        const scrollAnimationStagger = Math.max(0, getVar('--c3d-scroll-animation-stagger'));
+        const initialHoverLift = getVar('--c3d-hover-lift');
+        const slideHover = getBool('--c3d-slide-hover');
+        const slideX = getVar('--c3d-slide-x');
+        const slideY = getVar('--c3d-slide-y');
+        const slideZ = getVar('--c3d-slide-z');
+
+        cards.forEach((card, index) => {
+            const baseZ = index * zOffset;
+            const baseX = index * xOffset;
+            const baseY = index * yOffset;
+            const baseTransform = `translateZ(${baseZ}px) translateX(${baseX}px) translateY(${baseY}px)`;
+            
+            // Determine active transform based on slideHover setting
+            let activeTransform;
+            if (slideHover) {
+                // Slide effect: use slideZ and add X/Y slide
+                activeTransform = `translateZ(${baseZ + slideZ}px) translateX(${baseX + slideX}px) translateY(${baseY + slideY}px)`;
+            } else {
+                // Standard lift effect
+                activeTransform = `translateZ(${baseZ + initialHoverLift}px) translateX(${baseX}px) translateY(${baseY}px)`;
+            }
+            
+            card.dataset.baseTransform = baseTransform;
+            card.dataset.activeTransform = activeTransform;
+            if (scrollAnimationEnabled) {
+                card.style.transform = activeTransform;
+            }
+        });
+
+        const resetCardsToActive = () => {
+            cards.forEach((card) => {
+                card.style.transform = card.dataset.activeTransform;
+            });
+        };
+
+        const animateCardsToBase = () => {
+            cards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.style.transform = card.dataset.baseTransform;
+                }, index * scrollAnimationStagger);
+            });
+        };
+
+        const observerOptions = { threshold: [0, 1] };
+        let intersectionObserver;
+        const setupScrollAnimation = () => {
+            if (!scrollAnimationEnabled || !cards.length) {
+                return;
+            }
+
+            intersectionObserver = new IntersectionObserver((entries, obs) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting && entry.intersectionRatio >= 1) {
+                        // Fully in viewport - animate to base
+                        animateCardsToBase();
+                    } else if (!entry.isIntersecting || entry.intersectionRatio === 0) {
+                        // Completely out of viewport - reset to active state
+                        resetCardsToActive();
+                    }
+                });
+            }, observerOptions);
+
+            intersectionObserver.observe(wrapper);
+        };
+
+        setupScrollAnimation();
 
         // Helper to update all card positions based on active index
         function updatePositions(activeIndex) {
