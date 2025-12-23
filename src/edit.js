@@ -282,9 +282,8 @@ export default function Edit({ attributes, setAttributes }) {
                     <div
                         className="cards3d-container"
                         style={{
-                            transform: `rotateX(${cameraRotateX}deg) rotateZ(45deg) scale3d(${scaleTransform}, ${scaleTransform}, ${scaleTransform})`,
+                            transform: `translateX(${horPos}px) rotateX(${cameraRotateX}deg) rotateZ(45deg) scale3d(${scaleTransform}, ${scaleTransform}, ${scaleTransform})`,
                             marginBottom: `${vertPos}px`,
-                            marginLeft: `${horPos}px`,
                             '--card-depth': `${cardDepth}px`,
                         }}
                     >

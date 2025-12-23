@@ -85,9 +85,8 @@ function cards3d_render_block($attributes) {
     ?>
     <div id="<?php echo esc_attr($block_id); ?>" class="cards3d-wrapper" style="perspective: <?php echo $perspective; ?>; min-height: <?php echo esc_attr($atts['blockHeight']); ?>px;">
         <div class="cards3d-container" style="
-            transform: rotateX(<?php echo esc_attr($atts['cameraRotateX']); ?>deg) rotateZ(45deg) scale3d(<?php echo $scaleTransform; ?>, <?php echo $scaleTransform; ?>, <?php echo $scaleTransform; ?>);
+            transform: translateX(<?php echo esc_attr($atts['horPos']); ?>px) rotateX(<?php echo esc_attr($atts['cameraRotateX']); ?>deg) rotateZ(45deg) scale3d(<?php echo $scaleTransform; ?>, <?php echo $scaleTransform; ?>, <?php echo $scaleTransform; ?>);
             margin-bottom: <?php echo esc_attr($atts['vertPos']); ?>px;
-            margin-left: <?php echo esc_attr($atts['horPos']); ?>px;
             --card-depth: <?php echo esc_attr($atts['cardDepth']); ?>px;
         ">
             <?php foreach ($cards as $index => $card) : 
