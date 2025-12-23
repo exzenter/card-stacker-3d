@@ -13,6 +13,7 @@ import {
 } from '@wordpress/components';
 import { useState } from '@wordpress/element';
 import CardEditor from './components/CardEditor';
+import PreviewCard from './components/PreviewCard';
 
 export default function Edit({ attributes, setAttributes }) {
     const {
@@ -668,81 +669,33 @@ export default function Edit({ attributes, setAttributes }) {
                             '--shadow-blur': shadowBlur,
                         }}
                     >
-                        {cards.map((card, index) => {
-                            const zPos = index * zOffset;
-                            const xPos = index * xOffset;
-                            const yPos = index * yOffset;
-
-                            // Visualize slide hover on the last card if active
-                            let finalTransform = `translateZ(${zPos}px) translateX(${xPos}px) translateY(${yPos}px)`;
-                            if (currentSlideHover && index === cards.length - 1) {
-                                // "Visualize slide hover state" -> emulate the hover effect on this card
-                                // The effect: translateZ(baseZ + slideHoverZ) translateX(baseX + slideHoverX) translateY(baseY + slideHoverY)
-                                finalTransform = `translateZ(${zPos + currentSlideZ}px) translateX(${xPos + currentSlideX}px) translateY(${yPos + currentSlideY}px)`;
-                            }
-
-                            return (
-                                <div
-                                    key={index}
-                                    className="cards3d-card"
-                                    style={{
-                                        transform: finalTransform,
-                                    }}
-                                >
-                                    <div
-                                        className="cards3d-face"
-                                        style={{
-                                            background: cardFaceColor,
-                                            boxShadow: `0 0 0 1px ${cardBorderColor}`,
-                                        }}
-                                    />
-                                    <div
-                                        className="cards3d-edge-bottom"
-                                        style={{
-                                            background: `linear-gradient(to bottom, ${depthColor1}, ${depthColor2})`,
-                                        }}
-                                    />
-                                    <div
-                                        className="cards3d-edge-right"
-                                        style={{
-                                            background: `linear-gradient(to right, ${depthColor1}, ${depthColor2})`,
-                                        }}
-                                    />
-                                    <div className="cards3d-content">
-                                        <div
-                                            className="cards3d-logo"
-                                            style={{
-                                                width: `${logoSize}px`,
-                                                height: `${logoSize}px`,
-                                                left: `${logoX}%`,
-                                                top: `${logoY}%`,
-                                            }}
-                                            dangerouslySetInnerHTML={{ __html: card.svg }}
-                                        />
-                                        <span
-                                            className="cards3d-title"
-                                            style={{
-                                                bottom: `${titleY}px`,
-                                                left: `${titleX}px`,
-                                                fontSize: `${fontSize}px`,
-                                            }}
-                                        >
-                                            {card.title}
-                                        </span>
-                                        <span
-                                            className="cards3d-subtitle"
-                                            style={{
-                                                bottom: `${subtitleY}%`,
-                                                right: `${subtitleX}px`,
-                                                fontSize: `${Math.round(fontSize * 0.7)}px`,
-                                            }}
-                                        >
-                                            {card.subtitle}
-                                        </span>
-                                    </div>
-                                </div>
-                            );
-                        })}
+                        {cards.map((card, index) => (
+                            <PreviewCard
+                                key={index}
+                                index={index}
+                                card={card}
+                                isLastCard={index === cards.length - 1}
+                                zOffset={zOffset}
+                                xOffset={xOffset}
+                                yOffset={yOffset}
+                                slideHover={currentSlideHover}
+                                slideX={currentSlideX}
+                                slideY={currentSlideY}
+                                slideZ={currentSlideZ}
+                                cardFaceColor={cardFaceColor}
+                                cardBorderColor={cardBorderColor}
+                                depthColor1={depthColor1}
+                                depthColor2={depthColor2}
+                                logoSize={logoSize}
+                                logoX={logoX}
+                                logoY={logoY}
+                                titleX={titleX}
+                                titleY={titleY}
+                                subtitleX={subtitleX}
+                                subtitleY={subtitleY}
+                                fontSize={fontSize}
+                            />
+                        ))}
                     </div>
                 </div>
             </div>

@@ -48,8 +48,22 @@ export default function CardEditor({ cards, onChange, onClose }) {
         setEditedCards(newCards);
     };
 
+    const minifySVG = (str) => {
+        if (!str) return '';
+        return str
+            .replace(/<\?xml.*?>/gi, '')
+            .replace(/<!--[\s\S]*?-->/g, '')
+            .replace(/\s+/g, ' ')
+            .replace(/>\s+</g, '><')
+            .trim();
+    };
+
     const handleSave = () => {
-        onChange(editedCards);
+        const optimizedCards = editedCards.map(card => ({
+            ...card,
+            svg: minifySVG(card.svg)
+        }));
+        onChange(optimizedCards);
         onClose();
     };
 
