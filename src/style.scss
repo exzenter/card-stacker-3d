@@ -27,6 +27,22 @@
     cursor: pointer;
 }
 
+.cards3d-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--shadow-color, #000000);
+    opacity: calc(var(--shadow-opacity, 30) / 100);
+    filter: blur(calc(var(--shadow-blur, 20) * 1px));
+    transform: translateZ(-2px) translateX(calc(var(--shadow-x, 10) * 1px)) translateY(calc(var(--shadow-y, 10) * 1px));
+    border-radius: 12px;
+    /* Approx match card radius if any */
+    pointer-events: none;
+}
+
 .cards3d-face {
     position: absolute;
     width: 100%;

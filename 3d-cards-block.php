@@ -105,9 +105,16 @@ function cards3d_render_block($attributes) {
         #<?php echo $block_id; ?> {
             --c3d-scale: <?php echo $scaleD; ?>;
             --c3d-rot-x: <?php echo $rotXD; ?>deg;
-            --c3d-vert: <?php echo $vertD; ?>px;
             --c3d-hor: <?php echo $horD; ?>px;
             --c3d-persp: <?php echo $perspD; ?>;
+
+            /* Interaction Defaults (Desktop) - Base Styles */
+            --c3d-hover-lift: <?php echo intval($atts['hoverLift']); ?>px;
+            --c3d-stay-hover: <?php echo $atts['stayHover'] ? 1 : 0; ?>;
+            --c3d-slide-hover: <?php echo $atts['slideHover'] ? 1 : 0; ?>;
+            --c3d-slide-x: <?php echo intval($atts['slideHoverX']); ?>px;
+            --c3d-slide-y: <?php echo intval($atts['slideHoverY']); ?>px;
+            --c3d-slide-z: <?php echo intval($atts['slideHoverZ']); ?>px;
         }
         
         <?php if (
@@ -115,7 +122,13 @@ function cards3d_render_block($attributes) {
             !is_null($atts['cameraRotateXTablet']) || 
             !is_null($atts['vertPosTablet']) || 
             !is_null($atts['horPosTablet']) || 
-            !is_null($atts['orthographicTablet'])
+            !is_null($atts['orthographicTablet']) ||
+            !is_null($atts['hoverLiftTablet']) ||
+            !is_null($atts['stayHoverTablet']) ||
+            !is_null($atts['slideHoverTablet']) ||
+            !is_null($atts['slideHoverXTablet']) ||
+            !is_null($atts['slideHoverYTablet']) ||
+            !is_null($atts['slideHoverZTablet'])
         ) : ?>
         @media (max-width: 1024px) {
             #<?php echo $block_id; ?> {
@@ -124,6 +137,13 @@ function cards3d_render_block($attributes) {
                 <?php if (!is_null($atts['vertPosTablet'])) echo '--c3d-vert: ' . $atts['vertPosTablet'] . 'px;'; ?>
                 <?php if (!is_null($atts['horPosTablet'])) echo '--c3d-hor: ' . $atts['horPosTablet'] . 'px;'; ?>
                 <?php if (!is_null($atts['orthographicTablet'])) echo '--c3d-persp: ' . ($atts['orthographicTablet'] ? 'none' : '1000px') . ';'; ?>
+                
+                <?php if (!is_null($atts['hoverLiftTablet'])) echo '--c3d-hover-lift: ' . $atts['hoverLiftTablet'] . 'px;'; ?>
+                <?php if (!is_null($atts['stayHoverTablet'])) echo '--c3d-stay-hover: ' . ($atts['stayHoverTablet'] ? 1 : 0) . ';'; ?>
+                <?php if (!is_null($atts['slideHoverTablet'])) echo '--c3d-slide-hover: ' . ($atts['slideHoverTablet'] ? 1 : 0) . ';'; ?>
+                <?php if (!is_null($atts['slideHoverXTablet'])) echo '--c3d-slide-x: ' . $atts['slideHoverXTablet'] . 'px;'; ?>
+                <?php if (!is_null($atts['slideHoverYTablet'])) echo '--c3d-slide-y: ' . $atts['slideHoverYTablet'] . 'px;'; ?>
+                <?php if (!is_null($atts['slideHoverZTablet'])) echo '--c3d-slide-z: ' . $atts['slideHoverZTablet'] . 'px;'; ?>
             }
         }
         <?php endif; ?>
@@ -133,7 +153,13 @@ function cards3d_render_block($attributes) {
             !is_null($atts['cameraRotateXMobile']) || 
             !is_null($atts['vertPosMobile']) || 
             !is_null($atts['horPosMobile']) || 
-            !is_null($atts['orthographicMobile'])
+            !is_null($atts['orthographicMobile']) ||
+            !is_null($atts['hoverLiftMobile']) ||
+            !is_null($atts['stayHoverMobile']) ||
+            !is_null($atts['slideHoverMobile']) ||
+            !is_null($atts['slideHoverXMobile']) ||
+            !is_null($atts['slideHoverYMobile']) ||
+            !is_null($atts['slideHoverZMobile'])
         ) : ?>
         @media (max-width: 767px) {
             #<?php echo $block_id; ?> {
@@ -142,6 +168,13 @@ function cards3d_render_block($attributes) {
                 <?php if (!is_null($atts['vertPosMobile'])) echo '--c3d-vert: ' . $atts['vertPosMobile'] . 'px;'; ?>
                 <?php if (!is_null($atts['horPosMobile'])) echo '--c3d-hor: ' . $atts['horPosMobile'] . 'px;'; ?>
                 <?php if (!is_null($atts['orthographicMobile'])) echo '--c3d-persp: ' . ($atts['orthographicMobile'] ? 'none' : '1000px') . ';'; ?>
+
+                <?php if (!is_null($atts['hoverLiftMobile'])) echo '--c3d-hover-lift: ' . $atts['hoverLiftMobile'] . 'px;'; ?>
+                <?php if (!is_null($atts['stayHoverMobile'])) echo '--c3d-stay-hover: ' . ($atts['stayHoverMobile'] ? 1 : 0) . ';'; ?>
+                <?php if (!is_null($atts['slideHoverMobile'])) echo '--c3d-slide-hover: ' . ($atts['slideHoverMobile'] ? 1 : 0) . ';'; ?>
+                <?php if (!is_null($atts['slideHoverXMobile'])) echo '--c3d-slide-x: ' . $atts['slideHoverXMobile'] . 'px;'; ?>
+                <?php if (!is_null($atts['slideHoverYMobile'])) echo '--c3d-slide-y: ' . $atts['slideHoverYMobile'] . 'px;'; ?>
+                <?php if (!is_null($atts['slideHoverZMobile'])) echo '--c3d-slide-z: ' . $atts['slideHoverZMobile'] . 'px;'; ?>
             }
         }
         <?php endif; ?>
@@ -152,6 +185,11 @@ function cards3d_render_block($attributes) {
             transform: translateX(var(--c3d-hor)) rotateX(var(--c3d-rot-x)) rotateZ(45deg) scale3d(var(--c3d-scale), var(--c3d-scale), var(--c3d-scale));
             margin-bottom: var(--c3d-vert);
             --card-depth: <?php echo esc_attr($atts['cardDepth']); ?>px;
+            --shadow-color: <?php echo esc_attr($atts['shadowColor']); ?>;
+            --shadow-opacity: <?php echo intval($atts['shadowOpacity']); ?>;
+            --shadow-x: <?php echo intval($atts['shadowX']); ?>;
+            --shadow-y: <?php echo intval($atts['shadowY']); ?>;
+            --shadow-blur: <?php echo intval($atts['shadowBlur']); ?>;
         ">
             <?php foreach ($cards as $index => $card) : 
                 $zPos = $index * $atts['zOffset'];
@@ -216,34 +254,67 @@ function cards3d_render_block($attributes) {
     <script>
     (function() {
         const wrapper = document.getElementById('<?php echo esc_js($block_id); ?>');
+        if (!wrapper) return;
         const cards = wrapper.querySelectorAll('.cards3d-card');
-        const hoverLift = <?php echo intval($atts['hoverLift']); ?>;
         const zOffset = <?php echo intval($atts['zOffset']); ?>;
         const xOffset = <?php echo intval($atts['xOffset']); ?>;
         const yOffset = <?php echo intval($atts['yOffset']); ?>;
         
+        // Helper to get computed CSS var value from wrapper
+        const getVar = (name) => {
+            const val = getComputedStyle(wrapper).getPropertyValue(name).trim();
+            // Handle pixels if present (though parseInt handles it)
+            return val ? parseInt(val, 10) : 0;
+        };
+        const getBool = (name) => {
+             const val = getComputedStyle(wrapper).getPropertyValue(name).trim();
+             return val === '1';
+        };
+
+        // Helper to update all card positions based on active index
+        function updatePositions(activeIndex) {
+            // Read current responsive values at the moment of interaction
+            const hoverLift = getVar('--c3d-hover-lift');
+            const slideHover = getBool('--c3d-slide-hover');
+            const slideX = getVar('--c3d-slide-x');
+            const slideY = getVar('--c3d-slide-y');
+            const slideZ = getVar('--c3d-slide-z');
+
+            cards.forEach((card, i) => {
+                const baseZ = i * zOffset;
+                const baseX = i * xOffset;
+                const baseY = i * yOffset;
+                
+                // If this card is ABOVE the active index, lift it
+                if (activeIndex !== -1 && i > activeIndex) {
+                    if (slideHover) {
+                        // Slide effect: override lift with slideZ and add X/Y slide
+                        card.style.transform = `translateZ(${baseZ + slideZ}px) translateX(${baseX + slideX}px) translateY(${baseY + slideY}px)`;
+                    } else {
+                        // Standard lift effect
+                        card.style.transform = `translateZ(${baseZ + hoverLift}px) translateX(${baseX}px) translateY(${baseY}px)`;
+                    }
+                } else {
+                    // Reset to base position
+                    card.style.transform = `translateZ(${baseZ}px) translateX(${baseX}px) translateY(${baseY}px)`;
+                }
+            });
+        }
+
         cards.forEach((card, index) => {
-            if (index < cards.length - 1) {
-                card.addEventListener('mouseenter', () => {
-                    for (let i = index + 1; i < cards.length; i++) {
-                        const targetCard = cards[i];
-                        const baseZ = i * zOffset;
-                        const xPos = i * xOffset;
-                        const yPos = i * yOffset;
-                        targetCard.style.transform = `translateZ(${baseZ + hoverLift}px) translateX(${xPos}px) translateY(${yPos}px)`;
-                    }
-                });
-                card.addEventListener('mouseleave', () => {
-                    for (let i = index + 1; i < cards.length; i++) {
-                        const targetCard = cards[i];
-                        const baseZ = i * zOffset;
-                        const xPos = i * xOffset;
-                        const yPos = i * yOffset;
-                        targetCard.style.transform = `translateZ(${baseZ}px) translateX(${xPos}px) translateY(${yPos}px)`;
-                    }
-                });
-            }
+            card.addEventListener('mouseenter', () => {
+                updatePositions(index);
+            });
+            
+            card.addEventListener('mouseleave', () => {
+                // Check if stayHover is active for current breakpoint
+                const stayHover = getBool('--c3d-stay-hover');
+                if (!stayHover) {
+                    updatePositions(-1); // Reset all
+                }
+            });
         });
+        
     })();
     </script>
     <?php

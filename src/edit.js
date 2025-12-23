@@ -1,5 +1,5 @@
 import { __ } from '@wordpress/i18n';
-import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
+import { useBlockProps, InspectorControls, PanelColorSettings } from '@wordpress/block-editor';
 import {
     PanelBody,
     RangeControl,
@@ -52,6 +52,23 @@ export default function Edit({ attributes, setAttributes }) {
         horPosMobile,
         cameraRotateXMobile,
         orthographicMobile,
+        stayHover,
+        slideHover,
+        slideHoverX,
+        slideHoverY,
+        slideHoverZ,
+        shadowColor,
+        shadowOpacity,
+        shadowX,
+        shadowY,
+        shadowBlur,
+        // Responsive Interaction
+        stayHoverTablet, stayHoverMobile,
+        slideHoverTablet, slideHoverMobile,
+        slideHoverXTablet, slideHoverXMobile,
+        slideHoverYTablet, slideHoverYMobile,
+        slideHoverZTablet, slideHoverZMobile,
+        hoverLiftTablet, hoverLiftMobile,
     } = attributes;
 
     const [isCardEditorOpen, setIsCardEditorOpen] = useState(false);
@@ -65,6 +82,13 @@ export default function Edit({ attributes, setAttributes }) {
     let currentHorPos = horPos;
     let currentRotateX = cameraRotateX;
     let currentOrthographic = orthographic;
+    // Interaction preview
+    let currentStayHover = stayHover;
+    let currentSlideHover = slideHover;
+    let currentSlideX = slideHoverX;
+    let currentSlideY = slideHoverY;
+    let currentSlideZ = slideHoverZ;
+    let currentHoverLift = hoverLift;
 
     if (viewMode === 'tablet') {
         if (globalScaleTablet !== null && globalScaleTablet !== undefined) currentScale = globalScaleTablet;
@@ -72,6 +96,13 @@ export default function Edit({ attributes, setAttributes }) {
         if (horPosTablet !== null && horPosTablet !== undefined) currentHorPos = horPosTablet;
         if (cameraRotateXTablet !== null && cameraRotateXTablet !== undefined) currentRotateX = cameraRotateXTablet;
         if (orthographicTablet !== null && orthographicTablet !== undefined) currentOrthographic = orthographicTablet;
+
+        if (stayHoverTablet !== null && stayHoverTablet !== undefined) currentStayHover = stayHoverTablet;
+        if (slideHoverTablet !== null && slideHoverTablet !== undefined) currentSlideHover = slideHoverTablet;
+        if (slideHoverXTablet !== null && slideHoverXTablet !== undefined) currentSlideX = slideHoverXTablet;
+        if (slideHoverYTablet !== null && slideHoverYTablet !== undefined) currentSlideY = slideHoverYTablet;
+        if (slideHoverZTablet !== null && slideHoverZTablet !== undefined) currentSlideZ = slideHoverZTablet;
+        if (hoverLiftTablet !== null && hoverLiftTablet !== undefined) currentHoverLift = hoverLiftTablet;
     } else if (viewMode === 'mobile') {
         // Mobile inherits Tablet -> Desktop
         let baseScale = (globalScaleTablet !== null && globalScaleTablet !== undefined) ? globalScaleTablet : globalScale;
@@ -80,11 +111,25 @@ export default function Edit({ attributes, setAttributes }) {
         let baseRot = (cameraRotateXTablet !== null && cameraRotateXTablet !== undefined) ? cameraRotateXTablet : cameraRotateX;
         let baseOrtho = (orthographicTablet !== null && orthographicTablet !== undefined) ? orthographicTablet : orthographic;
 
+        let baseStayHover = (stayHoverTablet !== null && stayHoverTablet !== undefined) ? stayHoverTablet : stayHover;
+        let baseSlideHover = (slideHoverTablet !== null && slideHoverTablet !== undefined) ? slideHoverTablet : slideHover;
+        let baseSlideX = (slideHoverXTablet !== null && slideHoverXTablet !== undefined) ? slideHoverXTablet : slideHoverX;
+        let baseSlideY = (slideHoverYTablet !== null && slideHoverYTablet !== undefined) ? slideHoverYTablet : slideHoverY;
+        let baseSlideZ = (slideHoverZTablet !== null && slideHoverZTablet !== undefined) ? slideHoverZTablet : slideHoverZ;
+        let baseHoverLift = (hoverLiftTablet !== null && hoverLiftTablet !== undefined) ? hoverLiftTablet : hoverLift;
+
         if (globalScaleMobile !== null && globalScaleMobile !== undefined) currentScale = globalScaleMobile; else currentScale = baseScale;
         if (vertPosMobile !== null && vertPosMobile !== undefined) currentVertPos = vertPosMobile; else currentVertPos = baseVert;
         if (horPosMobile !== null && horPosMobile !== undefined) currentHorPos = horPosMobile; else currentHorPos = baseHor;
         if (cameraRotateXMobile !== null && cameraRotateXMobile !== undefined) currentRotateX = cameraRotateXMobile; else currentRotateX = baseRot;
         if (orthographicMobile !== null && orthographicMobile !== undefined) currentOrthographic = orthographicMobile; else currentOrthographic = baseOrtho;
+
+        if (stayHoverMobile !== null && stayHoverMobile !== undefined) currentStayHover = stayHoverMobile; else currentStayHover = baseStayHover;
+        if (slideHoverMobile !== null && slideHoverMobile !== undefined) currentSlideHover = slideHoverMobile; else currentSlideHover = baseSlideHover;
+        if (slideHoverXMobile !== null && slideHoverXMobile !== undefined) currentSlideX = slideHoverXMobile; else currentSlideX = baseSlideX;
+        if (slideHoverYMobile !== null && slideHoverYMobile !== undefined) currentSlideY = slideHoverYMobile; else currentSlideY = baseSlideY;
+        if (slideHoverZMobile !== null && slideHoverZMobile !== undefined) currentSlideZ = slideHoverZMobile; else currentSlideZ = baseSlideZ;
+        if (hoverLiftMobile !== null && hoverLiftMobile !== undefined) currentHoverLift = hoverLiftMobile; else currentHoverLift = baseHoverLift;
     }
 
     const scaleTransform = currentScale / 100;
@@ -108,6 +153,148 @@ export default function Edit({ attributes, setAttributes }) {
                             {__('Karten bearbeiten', '3d-cards-block')}
                         </Button>
                     </VStack>
+                </PanelBody>
+
+                {/* Interaction Settings */}
+                <PanelBody title={__('Interaktion', '3d-cards-block')} initialOpen={false}>
+                    <TabPanel
+                        className="cards3d-interaction-tabs"
+                        activeClass="is-active"
+                        onSelect={(tabName) => setViewMode(tabName)}
+                        tabs={[
+                            { name: 'desktop', title: 'Desktop', className: 'cards3d-tab-desktop' },
+                            { name: 'tablet', title: 'Tablet', className: 'cards3d-tab-tablet' },
+                            { name: 'mobile', title: 'Mobile', className: 'cards3d-tab-mobile' },
+                        ]}
+                        initialTabName={viewMode}
+                    >
+                        {(tab) => {
+                            const isDesktop = tab.name === 'desktop';
+                            const isTablet = tab.name === 'tablet';
+                            const isMobile = tab.name === 'mobile';
+
+                            const getAttr = (baseName) => {
+                                if (isDesktop) return attributes[baseName];
+                                if (isTablet) return attributes[baseName + 'Tablet'];
+                                if (isMobile) return attributes[baseName + 'Mobile'];
+                            };
+
+                            const setAttr = (baseName, value) => {
+                                if (isDesktop) setAttributes({ [baseName]: value });
+                                if (isTablet) setAttributes({ [baseName + 'Tablet']: value });
+                                if (isMobile) setAttributes({ [baseName + 'Mobile']: value });
+                            };
+
+                            const getInheritedValue = (baseName) => {
+                                if (isDesktop) return null;
+                                if (isTablet) return attributes[baseName];
+                                if (isMobile) return attributes[baseName + 'Tablet'] ?? attributes[baseName];
+                            };
+
+                            // Values
+                            const valStayHover = getAttr('stayHover');
+                            const valSlideHover = getAttr('slideHover');
+                            const valSlideX = getAttr('slideHoverX');
+                            const valSlideY = getAttr('slideHoverY');
+                            const valSlideZ = getAttr('slideHoverZ');
+                            const valHoverLift = getAttr('hoverLift');
+
+                            // Effective boolean for display (inherit if null)
+                            const effStayHover = valStayHover ?? getInheritedValue('stayHover') ?? false;
+                            const effSlideHover = valSlideHover ?? getInheritedValue('slideHover') ?? false;
+
+                            return (
+                                <VStack spacing={4} style={{ marginTop: '16px' }}>
+                                    {!isDesktop && (
+                                        <p style={{ fontSize: '12px', color: '#666', fontStyle: 'italic', margin: 0 }}>
+                                            {__('Werte leer lassen um Einstellungen zu erben.', '3d-cards-block')}
+                                        </p>
+                                    )}
+
+                                    {/* Stay Hover */}
+                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                        <ToggleControl
+                                            label={__('Stay Hover', '3d-cards-block')}
+                                            checked={effStayHover}
+                                            onChange={(value) => setAttr('stayHover', value)}
+                                            help={__('Zuletzt gehoverte Karte bleibt angehoben.', '3d-cards-block')}
+                                            style={{ marginBottom: 0 }}
+                                        />
+                                        {!isDesktop && valStayHover !== null && (
+                                            <Button isSmall variant="tertiary" onClick={() => setAttr('stayHover', null)}>
+                                                Reset
+                                            </Button>
+                                        )}
+                                    </div>
+
+                                    {/* Slide Hover */}
+                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                        <ToggleControl
+                                            label={__('Slide Hover', '3d-cards-block')}
+                                            checked={effSlideHover}
+                                            onChange={(value) => setAttr('slideHover', value)}
+                                            help={__('Karten sliden zur Seite.', '3d-cards-block')}
+                                            style={{ marginBottom: 0 }}
+                                        />
+                                        {!isDesktop && valSlideHover !== null && (
+                                            <Button isSmall variant="tertiary" onClick={() => setAttr('slideHover', null)}>
+                                                Reset
+                                            </Button>
+                                        )}
+                                    </div>
+
+                                    {/* Slide Hover Details */}
+                                    {effSlideHover && (
+                                        <VStack spacing={3} style={{ marginLeft: '16px', borderLeft: '2px solid #ddd', paddingLeft: '12px' }}>
+                                            <RangeControl
+                                                label={__('Horizontaler Slide (X)', '3d-cards-block')}
+                                                value={valSlideX}
+                                                onChange={(value) => setAttr('slideHoverX', value)}
+                                                min={-500}
+                                                max={500}
+                                                allowReset={!isDesktop}
+                                                resetFallbackValue={null}
+                                                placeholder={!isDesktop && getInheritedValue('slideHoverX')}
+                                            />
+                                            <RangeControl
+                                                label={__('Vertikaler Slide (Y)', '3d-cards-block')}
+                                                value={valSlideY}
+                                                onChange={(value) => setAttr('slideHoverY', value)}
+                                                min={-500}
+                                                max={500}
+                                                allowReset={!isDesktop}
+                                                resetFallbackValue={null}
+                                                placeholder={!isDesktop && getInheritedValue('slideHoverY')}
+                                            />
+                                            <RangeControl
+                                                label={__('Z Override', '3d-cards-block')}
+                                                value={valSlideZ}
+                                                onChange={(value) => setAttr('slideHoverZ', value)}
+                                                min={0}
+                                                max={200}
+                                                allowReset={!isDesktop}
+                                                resetFallbackValue={null}
+                                                placeholder={!isDesktop && getInheritedValue('slideHoverZ')}
+                                            />
+                                        </VStack>
+                                    )}
+
+                                    {/* Hover Lift (Standard) */}
+                                    <RangeControl
+                                        label={__('Hover Lift (Standard)', '3d-cards-block')}
+                                        value={valHoverLift}
+                                        onChange={(value) => setAttr('hoverLift', value)}
+                                        min={20}
+                                        max={300}
+                                        allowReset={!isDesktop}
+                                        resetFallbackValue={null}
+                                        placeholder={!isDesktop && getInheritedValue('hoverLift')}
+                                        help={__('Anhebung bei Hover (wenn Slide aus)', '3d-cards-block')}
+                                    />
+                                </VStack>
+                            );
+                        }}
+                    </TabPanel>
                 </PanelBody>
 
                 {/* Transform Settings */}
@@ -138,14 +325,8 @@ export default function Edit({ attributes, setAttributes }) {
                         value={yOffset}
                         onChange={(value) => setAttributes({ yOffset: value })}
                         min={-100}
+                        min={-100}
                         max={100}
-                    />
-                    <RangeControl
-                        label={__('Hover Lift', '3d-cards-block')}
-                        value={hoverLift}
-                        onChange={(value) => setAttributes({ hoverLift: value })}
-                        min={20}
-                        max={200}
                     />
                 </PanelBody>
 
@@ -371,53 +552,81 @@ export default function Edit({ attributes, setAttributes }) {
                     />
                 </PanelBody>
 
-                {/* Color Settings */}
-                <PanelBody title={__('Farben', '3d-cards-block')} initialOpen={false}>
-                    <VStack spacing={4}>
-                        <div>
-                            <p style={{ marginBottom: '8px', fontWeight: 500 }}>{__('Kartenfarbe', '3d-cards-block')}</p>
-                            <ColorPicker
-                                color={cardFaceColor}
-                                onChange={(value) => setAttributes({ cardFaceColor: value })}
-                                enableAlpha={false}
-                            />
-                        </div>
-                        <div>
-                            <p style={{ marginBottom: '8px', fontWeight: 500 }}>{__('Randfarbe', '3d-cards-block')}</p>
-                            <ColorPicker
-                                color={cardBorderColor}
-                                onChange={(value) => setAttributes({ cardBorderColor: value })}
-                                enableAlpha={false}
-                            />
-                        </div>
-                        <div>
-                            <p style={{ marginBottom: '8px', fontWeight: 500 }}>{__('Dicke Gradient Start', '3d-cards-block')}</p>
-                            <ColorPicker
-                                color={depthColor1}
-                                onChange={(value) => setAttributes({ depthColor1: value })}
-                                enableAlpha={false}
-                            />
-                        </div>
-                        <div>
-                            <p style={{ marginBottom: '8px', fontWeight: 500 }}>{__('Dicke Gradient Ende', '3d-cards-block')}</p>
-                            <ColorPicker
-                                color={depthColor2}
-                                onChange={(value) => setAttributes({ depthColor2: value })}
-                                enableAlpha={false}
-                            />
-                        </div>
-                    </VStack>
+                <PanelColorSettings
+                    title={__('Farben', '3d-cards-block')}
+                    initialOpen={false}
+                    colorSettings={[
+                        {
+                            value: cardFaceColor,
+                            onChange: (value) => setAttributes({ cardFaceColor: value }),
+                            label: __('Kartenfarbe', '3d-cards-block'),
+                        },
+                        {
+                            value: cardBorderColor,
+                            onChange: (value) => setAttributes({ cardBorderColor: value }),
+                            label: __('Randfarbe', '3d-cards-block'),
+                        },
+                        {
+                            value: depthColor1,
+                            onChange: (value) => setAttributes({ depthColor1: value }),
+                            label: __('Dicke Gradient Start', '3d-cards-block'),
+                        },
+                        {
+                            value: depthColor2,
+                            onChange: (value) => setAttributes({ depthColor2: value }),
+                            label: __('Dicke Gradient Ende', '3d-cards-block'),
+                        },
+                        {
+                            value: shadowColor,
+                            onChange: (value) => setAttributes({ shadowColor: value }),
+                            label: __('Schattenfarbe', '3d-cards-block'),
+                        },
+                    ]}
+                />
+
+                {/* Shadow Settings */}
+                <PanelBody title={__('Schattendetails', '3d-cards-block')} initialOpen={false}>
+                    <RangeControl
+                        label={__('Deckkraft (%)', '3d-cards-block')}
+                        value={shadowOpacity}
+                        onChange={(value) => setAttributes({ shadowOpacity: value })}
+                        min={0}
+                        max={100}
+                    />
+                    <RangeControl
+                        label={__('Verschiebung X', '3d-cards-block')}
+                        value={shadowX}
+                        onChange={(value) => setAttributes({ shadowX: value })}
+                        min={-100}
+                        max={100}
+                    />
+                    <RangeControl
+                        label={__('Verschiebung Y', '3d-cards-block')}
+                        value={shadowY}
+                        onChange={(value) => setAttributes({ shadowY: value })}
+                        min={-100}
+                        max={100}
+                    />
+                    <RangeControl
+                        label={__('Weichzeichner (Blur)', '3d-cards-block')}
+                        value={shadowBlur}
+                        onChange={(value) => setAttributes({ shadowBlur: value })}
+                        min={0}
+                        max={100}
+                    />
                 </PanelBody>
-            </InspectorControls>
+            </InspectorControls >
 
             {/* Card Editor Modal */}
-            {isCardEditorOpen && (
-                <CardEditor
-                    cards={cards}
-                    onChange={(newCards) => setAttributes({ cards: newCards })}
-                    onClose={() => setIsCardEditorOpen(false)}
-                />
-            )}
+            {
+                isCardEditorOpen && (
+                    <CardEditor
+                        cards={cards}
+                        onChange={(newCards) => setAttributes({ cards: newCards })}
+                        onClose={() => setIsCardEditorOpen(false)}
+                    />
+                )
+            }
 
             {/* Editor Preview */}
             <div {...blockProps} style={{ minHeight: `${blockHeight}px` }}>
@@ -452,6 +661,11 @@ export default function Edit({ attributes, setAttributes }) {
                             transform: `translateX(${currentHorPos}px) rotateX(${currentRotateX}deg) rotateZ(45deg) scale3d(${scaleTransform}, ${scaleTransform}, ${scaleTransform})`,
                             marginBottom: `${currentVertPos}px`,
                             '--card-depth': `${cardDepth}px`,
+                            '--shadow-color': shadowColor,
+                            '--shadow-opacity': shadowOpacity,
+                            '--shadow-x': shadowX,
+                            '--shadow-y': shadowY,
+                            '--shadow-blur': shadowBlur,
                         }}
                     >
                         {cards.map((card, index) => {
@@ -459,12 +673,20 @@ export default function Edit({ attributes, setAttributes }) {
                             const xPos = index * xOffset;
                             const yPos = index * yOffset;
 
+                            // Visualize slide hover on the last card if active
+                            let finalTransform = `translateZ(${zPos}px) translateX(${xPos}px) translateY(${yPos}px)`;
+                            if (currentSlideHover && index === cards.length - 1) {
+                                // "Visualize slide hover state" -> emulate the hover effect on this card
+                                // The effect: translateZ(baseZ + slideHoverZ) translateX(baseX + slideHoverX) translateY(baseY + slideHoverY)
+                                finalTransform = `translateZ(${zPos + currentSlideZ}px) translateX(${xPos + currentSlideX}px) translateY(${yPos + currentSlideY}px)`;
+                            }
+
                             return (
                                 <div
                                     key={index}
                                     className="cards3d-card"
                                     style={{
-                                        transform: `translateZ(${zPos}px) translateX(${xPos}px) translateY(${yPos}px)`,
+                                        transform: finalTransform,
                                     }}
                                 >
                                     <div

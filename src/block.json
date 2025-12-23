@@ -91,6 +91,26 @@
             "type": "number",
             "default": 80
         },
+        "stayHover": {
+            "type": "boolean",
+            "default": false
+        },
+        "slideHover": {
+            "type": "boolean",
+            "default": false
+        },
+        "slideHoverX": {
+            "type": "number",
+            "default": 200
+        },
+        "slideHoverY": {
+            "type": "number",
+            "default": -50
+        },
+        "slideHoverZ": {
+            "type": "number",
+            "default": 0
+        },
         "globalScale": {
             "type": "number",
             "default": 180
@@ -122,6 +142,26 @@
         "depthColor2": {
             "type": "string",
             "default": "#dcdfe3"
+        },
+        "shadowColor": {
+            "type": "string",
+            "default": "#000000"
+        },
+        "shadowOpacity": {
+            "type": "number",
+            "default": 30
+        },
+        "shadowX": {
+            "type": "number",
+            "default": 10
+        },
+        "shadowY": {
+            "type": "number",
+            "default": 10
+        },
+        "shadowBlur": {
+            "type": "number",
+            "default": 20
         },
         "blockHeight": {
             "type": "number",
@@ -169,6 +209,54 @@
         },
         "orthographicMobile": {
             "type": "boolean",
+            "default": null
+        },
+        "stayHoverTablet": {
+            "type": "boolean",
+            "default": null
+        },
+        "stayHoverMobile": {
+            "type": "boolean",
+            "default": null
+        },
+        "slideHoverTablet": {
+            "type": "boolean",
+            "default": null
+        },
+        "slideHoverMobile": {
+            "type": "boolean",
+            "default": null
+        },
+        "slideHoverXTablet": {
+            "type": "number",
+            "default": null
+        },
+        "slideHoverXMobile": {
+            "type": "number",
+            "default": null
+        },
+        "slideHoverYTablet": {
+            "type": "number",
+            "default": null
+        },
+        "slideHoverYMobile": {
+            "type": "number",
+            "default": null
+        },
+        "slideHoverZTablet": {
+            "type": "number",
+            "default": null
+        },
+        "slideHoverZMobile": {
+            "type": "number",
+            "default": null
+        },
+        "hoverLiftTablet": {
+            "type": "number",
+            "default": null
+        },
+        "hoverLiftMobile": {
+            "type": "number",
             "default": null
         }
     }
