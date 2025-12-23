@@ -38,6 +38,7 @@ export default function Edit({ attributes, setAttributes }) {
         depthColor1,
         depthColor2,
         blockHeight,
+        horPos,
     } = attributes;
 
     const [isCardEditorOpen, setIsCardEditorOpen] = useState(false);
@@ -123,6 +124,13 @@ export default function Edit({ attributes, setAttributes }) {
                         label={__('Vertikale Position', '3d-cards-block')}
                         value={vertPos}
                         onChange={(value) => setAttributes({ vertPos: value })}
+                        min={-300}
+                        max={300}
+                    />
+                    <RangeControl
+                        label={__('Horizontale Position', '3d-cards-block')}
+                        value={horPos}
+                        onChange={(value) => setAttributes({ horPos: value })}
                         min={-300}
                         max={300}
                     />
@@ -276,6 +284,7 @@ export default function Edit({ attributes, setAttributes }) {
                         style={{
                             transform: `rotateX(${cameraRotateX}deg) rotateZ(45deg) scale3d(${scaleTransform}, ${scaleTransform}, ${scaleTransform})`,
                             marginBottom: `${vertPos}px`,
+                            marginLeft: `${horPos}px`,
                             '--card-depth': `${cardDepth}px`,
                         }}
                     >

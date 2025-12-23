@@ -126,6 +126,10 @@
         "blockHeight": {
             "type": "number",
             "default": 600
+        },
+        "horPos": {
+            "type": "number",
+            "default": 0
         }
     }
 }
