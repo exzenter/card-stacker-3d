@@ -130,6 +130,46 @@
     "horPos": {
       "type": "number",
       "default": 0
+    },
+    "globalScaleTablet": {
+      "type": "number",
+      "default": null
+    },
+    "globalScaleMobile": {
+      "type": "number",
+      "default": null
+    },
+    "vertPosTablet": {
+      "type": "number",
+      "default": null
+    },
+    "vertPosMobile": {
+      "type": "number",
+      "default": null
+    },
+    "horPosTablet": {
+      "type": "number",
+      "default": null
+    },
+    "horPosMobile": {
+      "type": "number",
+      "default": null
+    },
+    "cameraRotateXTablet": {
+      "type": "number",
+      "default": null
+    },
+    "cameraRotateXMobile": {
+      "type": "number",
+      "default": null
+    },
+    "orthographicTablet": {
+      "type": "boolean",
+      "default": null
+    },
+    "orthographicMobile": {
+      "type": "boolean",
+      "default": null
     }
   }
 }

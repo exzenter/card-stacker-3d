@@ -7,6 +7,7 @@ import {
     Button,
     ButtonGroup,
     ColorPicker,
+    TabPanel,
     __experimentalHStack as HStack,
     __experimentalVStack as VStack,
 } from '@wordpress/components';
@@ -39,10 +40,54 @@ export default function Edit({ attributes, setAttributes }) {
         depthColor2,
         blockHeight,
         horPos,
+        // Tablet attributes
+        globalScaleTablet,
+        vertPosTablet,
+        horPosTablet,
+        cameraRotateXTablet,
+        orthographicTablet,
+        // Mobile attributes
+        globalScaleMobile,
+        vertPosMobile,
+        horPosMobile,
+        cameraRotateXMobile,
+        orthographicMobile,
     } = attributes;
 
     const [isCardEditorOpen, setIsCardEditorOpen] = useState(false);
-    const scaleTransform = globalScale / 100;
+
+    // View mode state for the inspector
+    const [viewMode, setViewMode] = useState('desktop'); // desktop, tablet, mobile
+
+    // Calculate current values based on view mode for PREVIEW
+    let currentScale = globalScale;
+    let currentVertPos = vertPos;
+    let currentHorPos = horPos;
+    let currentRotateX = cameraRotateX;
+    let currentOrthographic = orthographic;
+
+    if (viewMode === 'tablet') {
+        if (globalScaleTablet !== null && globalScaleTablet !== undefined) currentScale = globalScaleTablet;
+        if (vertPosTablet !== null && vertPosTablet !== undefined) currentVertPos = vertPosTablet;
+        if (horPosTablet !== null && horPosTablet !== undefined) currentHorPos = horPosTablet;
+        if (cameraRotateXTablet !== null && cameraRotateXTablet !== undefined) currentRotateX = cameraRotateXTablet;
+        if (orthographicTablet !== null && orthographicTablet !== undefined) currentOrthographic = orthographicTablet;
+    } else if (viewMode === 'mobile') {
+        // Mobile inherits Tablet -> Desktop
+        let baseScale = (globalScaleTablet !== null && globalScaleTablet !== undefined) ? globalScaleTablet : globalScale;
+        let baseVert = (vertPosTablet !== null && vertPosTablet !== undefined) ? vertPosTablet : vertPos;
+        let baseHor = (horPosTablet !== null && horPosTablet !== undefined) ? horPosTablet : horPos;
+        let baseRot = (cameraRotateXTablet !== null && cameraRotateXTablet !== undefined) ? cameraRotateXTablet : cameraRotateX;
+        let baseOrtho = (orthographicTablet !== null && orthographicTablet !== undefined) ? orthographicTablet : orthographic;
+
+        if (globalScaleMobile !== null && globalScaleMobile !== undefined) currentScale = globalScaleMobile; else currentScale = baseScale;
+        if (vertPosMobile !== null && vertPosMobile !== undefined) currentVertPos = vertPosMobile; else currentVertPos = baseVert;
+        if (horPosMobile !== null && horPosMobile !== undefined) currentHorPos = horPosMobile; else currentHorPos = baseHor;
+        if (cameraRotateXMobile !== null && cameraRotateXMobile !== undefined) currentRotateX = cameraRotateXMobile; else currentRotateX = baseRot;
+        if (orthographicMobile !== null && orthographicMobile !== undefined) currentOrthographic = orthographicMobile; else currentOrthographic = baseOrtho;
+    }
+
+    const scaleTransform = currentScale / 100;
 
     const blockProps = useBlockProps({
         className: 'cards3d-editor-wrapper',
@@ -106,56 +151,160 @@ export default function Edit({ attributes, setAttributes }) {
 
                 {/* View Settings */}
                 <PanelBody title={__('Ansicht', '3d-cards-block')} initialOpen={false}>
-                    <RangeControl
-                        label={__('Gesamt-Skalierung (%)', '3d-cards-block')}
-                        value={globalScale}
-                        onChange={(value) => setAttributes({ globalScale: value })}
-                        min={50}
-                        max={350}
-                    />
-                    <RangeControl
-                        label={__('Block-Höhe (px)', '3d-cards-block')}
-                        value={blockHeight}
-                        onChange={(value) => setAttributes({ blockHeight: value })}
-                        min={200}
-                        max={1200}
-                    />
-                    <RangeControl
-                        label={__('Vertikale Position', '3d-cards-block')}
-                        value={vertPos}
-                        onChange={(value) => setAttributes({ vertPos: value })}
-                        min={-300}
-                        max={300}
-                    />
-                    <RangeControl
-                        label={__('Horizontale Position', '3d-cards-block')}
-                        value={horPos}
-                        onChange={(value) => setAttributes({ horPos: value })}
-                        min={-300}
-                        max={300}
-                    />
-                    <HStack spacing={2} style={{ marginBottom: '16px' }}>
-                        <span>{__('Kamera-Neigung:', '3d-cards-block')} {cameraRotateX}°</span>
-                    </HStack>
-                    <ButtonGroup style={{ marginBottom: '16px' }}>
-                        <Button
-                            variant="secondary"
-                            onClick={() => setAttributes({ cameraRotateX: Math.max(0, cameraRotateX - 5) })}
-                        >
-                            ▼ -5°
-                        </Button>
-                        <Button
-                            variant="secondary"
-                            onClick={() => setAttributes({ cameraRotateX: Math.min(90, cameraRotateX + 5) })}
-                        >
-                            ▲ +5°
-                        </Button>
-                    </ButtonGroup>
-                    <ToggleControl
-                        label={__('Orthografische Ansicht', '3d-cards-block')}
-                        checked={orthographic}
-                        onChange={(value) => setAttributes({ orthographic: value })}
-                    />
+                    <TabPanel
+                        className="cards3d-view-tabs"
+                        activeClass="is-active"
+                        onSelect={(tabName) => setViewMode(tabName)}
+                        tabs={[
+                            {
+                                name: 'desktop',
+                                title: 'Desktop',
+                                className: 'cards3d-tab-desktop',
+                            },
+                            {
+                                name: 'tablet',
+                                title: 'Tablet',
+                                className: 'cards3d-tab-tablet',
+                            },
+                            {
+                                name: 'mobile',
+                                title: 'Mobile',
+                                className: 'cards3d-tab-mobile',
+                            },
+                        ]}
+                    >
+                        {(tab) => {
+                            const isDesktop = tab.name === 'desktop';
+                            const isTablet = tab.name === 'tablet';
+                            const isMobile = tab.name === 'mobile';
+
+                            // Helper to get/set attributes dynamically
+                            const getAttr = (baseName) => {
+                                if (isDesktop) return attributes[baseName];
+                                if (isTablet) return attributes[baseName + 'Tablet'];
+                                if (isMobile) return attributes[baseName + 'Mobile'];
+                            };
+
+                            const setAttr = (baseName, value) => {
+                                if (isDesktop) setAttributes({ [baseName]: value });
+                                if (isTablet) setAttributes({ [baseName + 'Tablet']: value });
+                                if (isMobile) setAttributes({ [baseName + 'Mobile']: value });
+                            };
+
+                            // Check inheritance for placeholder/visual feedback
+                            const getInheritedValue = (baseName) => {
+                                if (isDesktop) return null;
+                                // Tablet inherits Desktop
+                                if (isTablet) return attributes[baseName];
+                                // Mobile inherits Tablet or Desktop
+                                if (isMobile) {
+                                    return (attributes[baseName + 'Tablet'] !== null && attributes[baseName + 'Tablet'] !== undefined)
+                                        ? attributes[baseName + 'Tablet']
+                                        : attributes[baseName];
+                                }
+                            };
+
+                            // Values for controls (allow null for overrides)
+                            const valScale = getAttr('globalScale');
+                            const valVert = getAttr('vertPos');
+                            const valHor = getAttr('horPos');
+                            const valRot = getAttr('cameraRotateX');
+                            const valOrtho = getAttr('orthographic');
+
+                            return (
+                                <VStack spacing={4} style={{ marginTop: '16px' }}>
+                                    {!isDesktop && (
+                                        <p style={{ fontSize: '12px', color: '#666', fontStyle: 'italic', margin: 0 }}>
+                                            {__('Werte leer lassen um Einstellungen vom größeren Gerät zu übernehmen.', '3d-cards-block')}
+                                        </p>
+                                    )}
+
+                                    <RangeControl
+                                        label={__('Gesamt-Skalierung (%)', '3d-cards-block')}
+                                        value={valScale}
+                                        onChange={(value) => setAttr('globalScale', value)}
+                                        min={50}
+                                        max={350}
+                                        allowReset={!isDesktop}
+                                        resetFallbackValue={null}
+                                        placeholder={!isDesktop && getInheritedValue('globalScale')}
+                                    />
+
+                                    {isDesktop && (
+                                        <RangeControl
+                                            label={__('Block-Höhe (px)', '3d-cards-block')}
+                                            value={blockHeight}
+                                            onChange={(value) => setAttributes({ blockHeight: value })}
+                                            min={200}
+                                            max={1200}
+                                            help={__('Nur Desktop Einstellung', '3d-cards-block')}
+                                        />
+                                    )}
+
+                                    <RangeControl
+                                        label={__('Vertikale Position', '3d-cards-block')}
+                                        value={valVert}
+                                        onChange={(value) => setAttr('vertPos', value)}
+                                        min={-300}
+                                        max={300}
+                                        allowReset={!isDesktop}
+                                        resetFallbackValue={null}
+                                    />
+
+                                    <RangeControl
+                                        label={__('Horizontale Position', '3d-cards-block')}
+                                        value={valHor}
+                                        onChange={(value) => setAttr('horPos', value)}
+                                        min={-300}
+                                        max={300}
+                                        allowReset={!isDesktop}
+                                        resetFallbackValue={null}
+                                    />
+
+                                    <HStack spacing={2}>
+                                        <span>{__('Kamera-Neigung:', '3d-cards-block')} {valRot ?? getInheritedValue('cameraRotateX')}°</span>
+                                    </HStack>
+                                    <ButtonGroup>
+                                        <Button
+                                            variant="secondary"
+                                            onClick={() => {
+                                                const current = valRot ?? getInheritedValue('cameraRotateX');
+                                                setAttr('cameraRotateX', Math.max(0, current - 5));
+                                            }}
+                                        >
+                                            ▼ -5°
+                                        </Button>
+                                        <Button
+                                            variant="secondary"
+                                            onClick={() => {
+                                                const current = valRot ?? getInheritedValue('cameraRotateX');
+                                                setAttr('cameraRotateX', Math.min(90, current + 5));
+                                            }}
+                                        >
+                                            ▲ +5°
+                                        </Button>
+                                        {!isDesktop && (
+                                            <Button
+                                                variant="tertiary"
+                                                onClick={() => setAttr('cameraRotateX', null)}
+                                                disabled={valRot === null}
+                                                label="Reset"
+                                                icon="image-rotate"
+                                            >
+                                                ✕
+                                            </Button>
+                                        )}
+                                    </ButtonGroup>
+
+                                    <ToggleControl
+                                        label={__('Orthografische Ansicht', '3d-cards-block')}
+                                        checked={valOrtho ?? getInheritedValue('orthographic')}
+                                        onChange={(value) => setAttr('orthographic', value)}
+                                    />
+                                </VStack>
+                            );
+                        }}
+                    </TabPanel>
                 </PanelBody>
 
                 {/* Logo Settings */}
@@ -275,15 +424,33 @@ export default function Edit({ attributes, setAttributes }) {
                 <div
                     className="cards3d-preview-container"
                     style={{
-                        perspective: orthographic ? 'none' : '1000px',
+                        perspective: currentOrthographic ? 'none' : '1000px',
                         minHeight: `${blockHeight}px`,
+                        border: viewMode !== 'desktop' ? '2px dashed #e4e8ec' : 'none',
+                        position: 'relative',
                     }}
                 >
+                    {viewMode !== 'desktop' && (
+                        <div style={{
+                            position: 'absolute',
+                            top: 10,
+                            right: 10,
+                            background: '#eee',
+                            padding: '4px 8px',
+                            borderRadius: '4px',
+                            fontSize: '10px',
+                            textTransform: 'uppercase',
+                            fontWeight: 'bold',
+                            zIndex: 10
+                        }}>
+                            {viewMode} Preview
+                        </div>
+                    )}
                     <div
                         className="cards3d-container"
                         style={{
-                            transform: `translateX(${horPos}px) rotateX(${cameraRotateX}deg) rotateZ(45deg) scale3d(${scaleTransform}, ${scaleTransform}, ${scaleTransform})`,
-                            marginBottom: `${vertPos}px`,
+                            transform: `translateX(${currentHorPos}px) rotateX(${currentRotateX}deg) rotateZ(45deg) scale3d(${scaleTransform}, ${scaleTransform}, ${scaleTransform})`,
+                            marginBottom: `${currentVertPos}px`,
                             '--card-depth': `${cardDepth}px`,
                         }}
                     >

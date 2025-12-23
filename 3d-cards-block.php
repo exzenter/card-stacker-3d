@@ -67,7 +67,19 @@ function cards3d_render_block($attributes) {
         'depthColor1' => '#e8eaee',
         'depthColor2' => '#dcdfe3',
         'blockHeight' => 600,
-        'horPos' => 0
+        'horPos' => 0,
+        // Tablet defaults (null)
+        'globalScaleTablet' => null,
+        'vertPosTablet' => null,
+        'horPosTablet' => null,
+        'cameraRotateXTablet' => null,
+        'orthographicTablet' => null,
+        // Mobile defaults (null)
+        'globalScaleMobile' => null,
+        'vertPosMobile' => null,
+        'horPosMobile' => null,
+        'cameraRotateXMobile' => null,
+        'orthographicMobile' => null
     );
 
     $atts = wp_parse_args($attributes, $defaults);
@@ -77,16 +89,68 @@ function cards3d_render_block($attributes) {
     // Generate unique ID for this block instance
     $block_id = 'cards3d-' . uniqid();
     
-    // Calculate scale transform
-    $scaleTransform = $atts['globalScale'] / 100;
-    $perspective = $atts['orthographic'] ? 'none' : '1000px';
+    // Helper to resolve value logic: Desktop -> Tablet -> Mobile inheritance is handled via CSS cascade if we output variables for each breakpoint?
+    // Actually, simplest is to output the variables in media queries if the value is set.
     
+    // Prepare values
+    $scaleD = $atts['globalScale'] / 100;
+    $rotXD = $atts['cameraRotateX'];
+    $vertD = $atts['vertPos'];
+    $horD = $atts['horPos'];
+    $perspD = $atts['orthographic'] ? 'none' : '1000px';
+
     ob_start();
     ?>
-    <div id="<?php echo esc_attr($block_id); ?>" class="cards3d-wrapper" style="perspective: <?php echo $perspective; ?>; min-height: <?php echo esc_attr($atts['blockHeight']); ?>px;">
+    <style>
+        #<?php echo $block_id; ?> {
+            --c3d-scale: <?php echo $scaleD; ?>;
+            --c3d-rot-x: <?php echo $rotXD; ?>deg;
+            --c3d-vert: <?php echo $vertD; ?>px;
+            --c3d-hor: <?php echo $horD; ?>px;
+            --c3d-persp: <?php echo $perspD; ?>;
+        }
+        
+        <?php if (
+            !is_null($atts['globalScaleTablet']) || 
+            !is_null($atts['cameraRotateXTablet']) || 
+            !is_null($atts['vertPosTablet']) || 
+            !is_null($atts['horPosTablet']) || 
+            !is_null($atts['orthographicTablet'])
+        ) : ?>
+        @media (max-width: 1024px) {
+            #<?php echo $block_id; ?> {
+                <?php if (!is_null($atts['globalScaleTablet'])) echo '--c3d-scale: ' . ($atts['globalScaleTablet'] / 100) . ';'; ?>
+                <?php if (!is_null($atts['cameraRotateXTablet'])) echo '--c3d-rot-x: ' . $atts['cameraRotateXTablet'] . 'deg;'; ?>
+                <?php if (!is_null($atts['vertPosTablet'])) echo '--c3d-vert: ' . $atts['vertPosTablet'] . 'px;'; ?>
+                <?php if (!is_null($atts['horPosTablet'])) echo '--c3d-hor: ' . $atts['horPosTablet'] . 'px;'; ?>
+                <?php if (!is_null($atts['orthographicTablet'])) echo '--c3d-persp: ' . ($atts['orthographicTablet'] ? 'none' : '1000px') . ';'; ?>
+            }
+        }
+        <?php endif; ?>
+
+        <?php if (
+            !is_null($atts['globalScaleMobile']) || 
+            !is_null($atts['cameraRotateXMobile']) || 
+            !is_null($atts['vertPosMobile']) || 
+            !is_null($atts['horPosMobile']) || 
+            !is_null($atts['orthographicMobile'])
+        ) : ?>
+        @media (max-width: 767px) {
+            #<?php echo $block_id; ?> {
+                <?php if (!is_null($atts['globalScaleMobile'])) echo '--c3d-scale: ' . ($atts['globalScaleMobile'] / 100) . ';'; ?>
+                <?php if (!is_null($atts['cameraRotateXMobile'])) echo '--c3d-rot-x: ' . $atts['cameraRotateXMobile'] . 'deg;'; ?>
+                <?php if (!is_null($atts['vertPosMobile'])) echo '--c3d-vert: ' . $atts['vertPosMobile'] . 'px;'; ?>
+                <?php if (!is_null($atts['horPosMobile'])) echo '--c3d-hor: ' . $atts['horPosMobile'] . 'px;'; ?>
+                <?php if (!is_null($atts['orthographicMobile'])) echo '--c3d-persp: ' . ($atts['orthographicMobile'] ? 'none' : '1000px') . ';'; ?>
+            }
+        }
+        <?php endif; ?>
+    </style>
+
+    <div id="<?php echo esc_attr($block_id); ?>" class="cards3d-wrapper" style="perspective: var(--c3d-persp); min-height: <?php echo esc_attr($atts['blockHeight']); ?>px;">
         <div class="cards3d-container" style="
-            transform: translateX(<?php echo esc_attr($atts['horPos']); ?>px) rotateX(<?php echo esc_attr($atts['cameraRotateX']); ?>deg) rotateZ(45deg) scale3d(<?php echo $scaleTransform; ?>, <?php echo $scaleTransform; ?>, <?php echo $scaleTransform; ?>);
-            margin-bottom: <?php echo esc_attr($atts['vertPos']); ?>px;
+            transform: translateX(var(--c3d-hor)) rotateX(var(--c3d-rot-x)) rotateZ(45deg) scale3d(var(--c3d-scale), var(--c3d-scale), var(--c3d-scale));
+            margin-bottom: var(--c3d-vert);
             --card-depth: <?php echo esc_attr($atts['cardDepth']); ?>px;
         ">
             <?php foreach ($cards as $index => $card) : 
