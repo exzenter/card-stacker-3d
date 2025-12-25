@@ -72,6 +72,12 @@ export default function Edit({ attributes, setAttributes }) {
         slideHoverYTablet, slideHoverYMobile,
         slideHoverZTablet, slideHoverZMobile,
         hoverLiftTablet, hoverLiftMobile,
+        swapTitleSubtitle,
+        glassEnabled,
+        glassBlur,
+        glassOpacity,
+        glassSaturation,
+        glassBorderOpacity,
     } = attributes;
 
     const [isCardEditorOpen, setIsCardEditorOpen] = useState(false);
@@ -545,6 +551,12 @@ export default function Edit({ attributes, setAttributes }) {
                         min={8}
                         max={32}
                     />
+                    <ToggleControl
+                        label={__('Titel & Untertitel tauschen', '3d-cards-block')}
+                        checked={!!swapTitleSubtitle}
+                        onChange={(value) => setAttributes({ swapTitleSubtitle: value })}
+                        help={swapTitleSubtitle ? __('⚠️ Position-Labels sind jetzt vertauscht!', '3d-cards-block') : __('Tauscht Titel und Untertitel Positionen.', '3d-cards-block')}
+                    />
                     <RangeControl
                         label={__('Titel Y-Position', '3d-cards-block')}
                         value={titleY}
@@ -582,12 +594,12 @@ export default function Edit({ attributes, setAttributes }) {
                         {
                             value: cardFaceColor,
                             onChange: (value) => setAttributes({ cardFaceColor: value }),
-                            label: __('Kartenfarbe', '3d-cards-block'),
+                            label: __('Kartenfarbe (Basis)', '3d-cards-block'),
                         },
                         {
                             value: cardBorderColor,
                             onChange: (value) => setAttributes({ cardBorderColor: value }),
-                            label: __('Randfarbe', '3d-cards-block'),
+                            label: __('Randfarbe (Basis)', '3d-cards-block'),
                         },
                         {
                             value: depthColor1,
@@ -605,7 +617,48 @@ export default function Edit({ attributes, setAttributes }) {
                             label: __('Schattenfarbe', '3d-cards-block'),
                         },
                     ]}
-                />
+                >
+                    <div style={{ marginTop: '20px', borderTop: '1px solid #ddd', paddingTop: '16px' }}>
+                        <ToggleControl
+                            label={__('Glassmorphismus', '3d-cards-block')}
+                            checked={glassEnabled}
+                            onChange={(value) => setAttributes({ glassEnabled: value })}
+                            help={glassEnabled ? __('⚠️ Übersteuert Basis-Farben und Deckkraft.', '3d-cards-block') : __('Aktiviert Frosted-Glass Effekt.', '3d-cards-block')}
+                        />
+                        {glassEnabled && (
+                            <VStack spacing={3} style={{ marginLeft: '12px', borderLeft: '2px solid #ddd', paddingLeft: '12px' }}>
+                                <RangeControl
+                                    label={__('Weichzeichner (Blur)', '3d-cards-block')}
+                                    value={glassBlur}
+                                    onChange={(value) => setAttributes({ glassBlur: value })}
+                                    min={0}
+                                    max={50}
+                                />
+                                <RangeControl
+                                    label={__('Deckkraft (%)', '3d-cards-block')}
+                                    value={glassOpacity}
+                                    onChange={(value) => setAttributes({ glassOpacity: value })}
+                                    min={0}
+                                    max={100}
+                                />
+                                <RangeControl
+                                    label={__('Sättigung (%)', '3d-cards-block')}
+                                    value={glassSaturation}
+                                    onChange={(value) => setAttributes({ glassSaturation: value })}
+                                    min={0}
+                                    max={200}
+                                />
+                                <RangeControl
+                                    label={__('Rand-Deckkraft (%)', '3d-cards-block')}
+                                    value={glassBorderOpacity}
+                                    onChange={(value) => setAttributes({ glassBorderOpacity: value })}
+                                    min={0}
+                                    max={100}
+                                />
+                            </VStack>
+                        )}
+                    </div>
+                </PanelColorSettings>
 
                 {/* Shadow Settings */}
                 <PanelBody title={__('Schattendetails', '3d-cards-block')} initialOpen={false}>
@@ -716,6 +769,12 @@ export default function Edit({ attributes, setAttributes }) {
                                 subtitleX={subtitleX}
                                 subtitleY={subtitleY}
                                 fontSize={fontSize}
+                                swapTitleSubtitle={swapTitleSubtitle}
+                                glassEnabled={glassEnabled}
+                                glassBlur={glassBlur}
+                                glassOpacity={glassOpacity}
+                                glassSaturation={glassSaturation}
+                                glassBorderOpacity={glassBorderOpacity}
                             />
                         ))}
                     </div>

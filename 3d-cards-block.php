@@ -82,7 +82,12 @@ function cards3d_render_block($attributes) {
         'horPosMobile' => null,
         'cameraRotateXMobile' => null,
         'orthographicMobile' => null,
-        'swapTitleSubtitle' => false
+        'swapTitleSubtitle' => false,
+        'glassEnabled' => false,
+        'glassBlur' => 12,
+        'glassOpacity' => 20,
+        'glassSaturation' => 110,
+        'glassBorderOpacity' => 30
     );
 
     $atts = wp_parse_args($attributes, $defaults);
@@ -227,14 +232,49 @@ function cards3d_render_block($attributes) {
                     $eventName = esc_js($card['customEvent']);
                     $cardAttrs .= ' onclick="window.dispatchEvent(new CustomEvent(\'' . $eventName . '\', { detail: { cardIndex: ' . $index . ' } }));"';
                 }
+
+                // Glassmorphism Logic
+                $faceStyle = "background: " . esc_attr($atts['cardFaceColor']) . "; box-shadow: 0 0 0 1px " . esc_attr($atts['cardBorderColor']) . ";";
+                
+                if ($atts['glassEnabled']) {
+                    // Helper function for hex to rgb
+                    $hex2rgb = function($hex) {
+                        $hex = str_replace('#', '', $hex);
+                        // Sanitize: allow only hex chars
+                        $hex = preg_replace('/[^0-9a-fA-F]/', '', $hex);
+                        
+                        if (strlen($hex) == 3) {
+                            $r = hexdec(substr($hex,0,1).substr($hex,0,1));
+                            $g = hexdec(substr($hex,1,1).substr($hex,1,1));
+                            $b = hexdec(substr($hex,2,1).substr($hex,2,1));
+                        } elseif (strlen($hex) == 6) {
+                            $r = hexdec(substr($hex,0,2));
+                            $g = hexdec(substr($hex,2,2));
+                            $b = hexdec(substr($hex,4,2));
+                        } else {
+                            // Fallback to white if invalid
+                            return array(255, 255, 255);
+                        }
+                        return array($r, $g, $b);
+                    };
+
+                    $rgbFace = $hex2rgb($atts['cardFaceColor']);
+                    $rgbBorder = $hex2rgb($atts['cardBorderColor']);
+                    $glassOpacity = intval($atts['glassOpacity']) / 100;
+                    $glassBorderOpacity = intval($atts['glassBorderOpacity']) / 100;
+                    $glassBlur = intval($atts['glassBlur']);
+                    $glassSaturation = intval($atts['glassSaturation']);
+
+                    $faceStyle = "background: rgba({$rgbFace[0]}, {$rgbFace[1]}, {$rgbFace[2]}, {$glassOpacity});";
+                    $faceStyle .= "box-shadow: 0 0 0 1px rgba({$rgbBorder[0]}, {$rgbBorder[1]}, {$rgbBorder[2]}, {$glassBorderOpacity});";
+                    $faceStyle .= "backdrop-filter: blur({$glassBlur}px) saturate({$glassSaturation}%);";
+                    $faceStyle .= "-webkit-backdrop-filter: blur({$glassBlur}px) saturate({$glassSaturation}%);"; // Safari support
+                }
             ?>
             <<?php echo $tagName; ?> class="cards3d-card cards3d-card-<?php echo $index; ?>" style="
                 transform: translateZ(<?php echo $zPos; ?>px) translateX(<?php echo $xPos; ?>px) translateY(<?php echo $yPos; ?>px);
             " data-index="<?php echo $index; ?>" data-hover-lift="<?php echo esc_attr($atts['hoverLift']); ?>"<?php echo $cardAttrs; ?>>
-                <div class="cards3d-face" style="
-                    background: <?php echo esc_attr($atts['cardFaceColor']); ?>;
-                    box-shadow: 0 0 0 1px <?php echo esc_attr($atts['cardBorderColor']); ?>;
-                "></div>
+                <div class="cards3d-face" style="<?php echo $faceStyle; ?>"></div>
                 <div class="cards3d-edge-bottom" style="
                     background: linear-gradient(to bottom, <?php echo esc_attr($atts['depthColor1']); ?>, <?php echo esc_attr($atts['depthColor2']); ?>);
                 "></div>

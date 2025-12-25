@@ -13,6 +13,9 @@ A WordPress Gutenberg block that displays interactive 3D stacked cards with full
   - Color pickers for card face, border, and depth gradient
   - Global scale (50-350%)
   - Camera rotation and orthographic/perspective toggle
+- **Glassmorphism** - Modern frosted-glass effect
+  - Toggle switch to enable
+  - Custom blur, opacity, saturation, and border opacity
 - **Hover Effects** - Cards lift when hovered
   - Stay Hover option - Last hovered card remains lifted
   - Slide Hover option - Cards slide to the side with customizable X/Y/Z offsets

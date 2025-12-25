@@ -27,7 +27,43 @@ const PreviewCard = memo(({
     subtitleY,
     fontSize,
     swapTitleSubtitle,
+    glassEnabled,
+    glassBlur,
+    glassOpacity,
+    glassSaturation,
+    glassBorderOpacity,
 }) => {
+    // Helper to convert hex to rgb
+    const hexToRgb = (hex) => {
+        const shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+        hex = hex.replace(shorthandRegex, function (m, r, g, b) {
+            return r + r + g + g + b + b;
+        });
+        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? {
+            r: parseInt(result[1], 16),
+            g: parseInt(result[2], 16),
+            b: parseInt(result[3], 16)
+        } : null;
+    };
+
+    let faceStyle = {
+        background: cardFaceColor,
+        boxShadow: `0 0 0 1px ${cardBorderColor}`,
+    };
+
+    if (glassEnabled) {
+        const rgbFace = hexToRgb(cardFaceColor) || { r: 255, g: 255, b: 255 };
+        const rgbBorder = hexToRgb(cardBorderColor) || { r: 228, g: 232, b: 236 };
+
+        faceStyle = {
+            background: `rgba(${rgbFace.r}, ${rgbFace.g}, ${rgbFace.b}, ${glassOpacity / 100})`,
+            boxShadow: `0 0 0 1px rgba(${rgbBorder.r}, ${rgbBorder.g}, ${rgbBorder.b}, ${glassBorderOpacity / 100})`,
+            backdropFilter: `blur(${glassBlur}px) saturate(${glassSaturation}%)`,
+            WebkitBackdropFilter: `blur(${glassBlur}px) saturate(${glassSaturation}%)`, // Safari support
+        };
+    }
+
     // Swap the text content and styling when toggle is enabled
     const displayTitle = swapTitleSubtitle ? card.subtitle : card.title;
     const displaySubtitle = swapTitleSubtitle ? card.title : card.subtitle;
@@ -54,10 +90,7 @@ const PreviewCard = memo(({
         >
             <div
                 className="cards3d-face"
-                style={{
-                    background: cardFaceColor,
-                    boxShadow: `0 0 0 1px ${cardBorderColor}`,
-                }}
+                style={faceStyle}
             />
             <div
                 className="cards3d-edge-bottom"

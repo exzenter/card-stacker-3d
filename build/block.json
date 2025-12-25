@@ -266,6 +266,30 @@
     "scrollAnimationStagger": {
       "type": "number",
       "default": 200
+    },
+    "swapTitleSubtitle": {
+      "type": "boolean",
+      "default": false
+    },
+    "glassEnabled": {
+      "type": "boolean",
+      "default": false
+    },
+    "glassBlur": {
+      "type": "number",
+      "default": 12
+    },
+    "glassOpacity": {
+      "type": "number",
+      "default": 20
+    },
+    "glassSaturation": {
+      "type": "number",
+      "default": 110
+    },
+    "glassBorderOpacity": {
+      "type": "number",
+      "default": 30
     }
   }
 }
